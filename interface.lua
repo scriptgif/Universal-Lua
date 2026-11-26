@@ -1,466 +1,189 @@
--- UNIVERSAL LUA TEST
--- Version 3.0 - Modular Edition
--- Black & Red UI
-
 return function(Modules)
-    assert(type(Modules) == "table", "Modules table ausente")
+    local Players = game:GetService("Players")
+    local UIS = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
+    local player = Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+    local C = Modules.Visual.Palette
 
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local CoreGui = game:GetService("CoreGui")
+    pcall(function()
+        local old = playerGui:FindFirstChild("FenixHub")
+        if old then old:Destroy() end
+    end)
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
--- Remove versão anterior
-pcall(function()
-    local old = CoreGui:FindFirstChild("UniversalLuaTest")
-    if old then old:Destroy() end
-    old = playerGui:FindFirstChild("UniversalLuaTest")
-    if old then old:Destroy() end
-end)
-
--- Cores
-local BG = Color3.fromRGB(13, 13, 17)
-local PANEL = Color3.fromRGB(21, 21, 27)
-local CARD = Color3.fromRGB(29, 29, 37)
-local RED = Color3.fromRGB(220, 35, 55)
-local WHITE = Color3.fromRGB(245, 245, 250)
-local MUTED = Color3.fromRGB(145, 145, 160)
-
--- GUI
-local gui = Instance.new("ScreenGui")
-gui.Name = "UniversalLuaTest"
-gui.ResetOnSpawn = false
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-local success = pcall(function()
-    gui.Parent = CoreGui
-end)
-
-if not success then
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "FenixHub"
+    gui.ResetOnSpawn = false
+    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     gui.Parent = playerGui
-end
 
--- Funções visuais
-local function corner(obj, radius)
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, radius or 8)
-    c.Parent = obj
-    return c
-end
+    local function make(class, props, parent)
+        local obj = Instance.new(class)
+        for k,v in pairs(props or {}) do obj[k] = v end
+        obj.Parent = parent
+        return obj
+    end
+    local function round(obj, radius)
+        make("UICorner", {CornerRadius = UDim.new(0, radius or 9)}, obj)
+    end
+    local function outline(obj, color, thickness)
+        make("UIStroke", {Color = color or C.Red, Thickness = thickness or 1, Transparency = 0.2}, obj)
+    end
+    local function label(parent, text, size, pos, fontSize, color)
+        return make("TextLabel", {
+            BackgroundTransparency = 1, Text = text, Size = size, Position = pos,
+            Font = Enum.Font.GothamSemibold, TextSize = fontSize or 13,
+            TextColor3 = color or C.White, TextXAlignment = Enum.TextXAlignment.Left
+        }, parent)
+    end
 
-local function stroke(obj, color, thickness)
-    local s = Instance.new("UIStroke")
-    s.Color = color or RED
-    s.Thickness = thickness or 1
-    s.Transparency = 0.35
-    s.Parent = obj
-    return s
-end
+    local floating = make("TextButton", {
+        Name = "FenixButton", Size = UDim2.fromOffset(64,64),
+        Position = UDim2.new(0,22,0.5,-32), BackgroundColor3 = C.Background,
+        Text = "🔥", TextSize = 30, TextColor3 = C.White, Visible = false
+    }, gui)
+    round(floating, 32); outline(floating, C.Red, 2)
 
-local function tween(obj, props, duration)
-    TweenService:Create(
-        obj,
-        TweenInfo.new(duration or 0.2, Enum.EasingStyle.Quad),
-        props
-    ):Play()
-end
+    local main = make("Frame", {
+        Name = "Main", Size = UDim2.fromOffset(760,500),
+        Position = UDim2.new(0.5,-380,0.5,-250),
+        BackgroundColor3 = C.Background, BorderSizePixel = 0
+    }, gui)
+    round(main, 14); outline(main, C.Red, 2)
 
--- Botão flutuante
-local floating = Instance.new("TextButton")
-floating.Name = "FloatingButton"
-floating.Size = UDim2.fromOffset(54, 54)
-floating.Position = UDim2.new(0, 18, 0.5, -27)
-floating.BackgroundColor3 = BG
-floating.Text = "ULT"
-floating.TextColor3 = WHITE
-floating.TextSize = 17
-floating.Font = Enum.Font.GothamBold
-floating.AutoButtonColor = false
-floating.Visible = false
-floating.Parent = gui
-corner(floating, 18)
-stroke(floating, RED, 2)
+    local top = make("Frame", {Size=UDim2.new(1,0,0,112), BackgroundColor3=Color3.fromRGB(25,10,15), BorderSizePixel=0}, main)
+    round(top, 14)
+    label(top, "FENIX HUB", UDim2.new(0,260,0,48), UDim2.fromOffset(24,18), 32, C.White)
+    label(top, "VOE MAIS ALTO", UDim2.new(0,240,0,24), UDim2.fromOffset(28,66), 13, C.Orange)
+    label(top, "🔥", UDim2.fromOffset(90,70), UDim2.new(0.5,-45,0,20), 48, C.Orange)
+    local close = make("TextButton", {Size=UDim2.fromOffset(38,34), Position=UDim2.new(1,-50,0,14), Text="×", TextSize=26, TextColor3=C.White, BackgroundColor3=Color3.fromRGB(80,20,28)}, top)
+    round(close, 7)
 
--- Janela principal
-local main = Instance.new("Frame")
-main.Name = "Main"
-main.Size = UDim2.fromOffset(560, 370)
-main.Position = UDim2.new(0.5, -280, 0.5, -185)
-main.BackgroundColor3 = BG
-main.BorderSizePixel = 0
-main.Parent = gui
-corner(main, 12)
-stroke(main, Color3.fromRGB(85, 30, 40), 1)
-
--- Ajuste para celular e PC
-local scale = Instance.new("UIScale")
-scale.Parent = main
-
-local camera = workspace.CurrentCamera
-
-local function updateScale()
-    if not camera then return end
-    local viewport = camera.ViewportSize
-    scale.Scale = math.clamp(
-        math.min(viewport.X / 590, viewport.Y / 410),
-        0.55,
-        1
-    )
-end
-
-updateScale()
-camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale)
-
--- Barra superior
-local top = Instance.new("Frame")
-top.Size = UDim2.new(1, 0, 0, 52)
-top.BackgroundColor3 = PANEL
-top.BorderSizePixel = 0
-top.Parent = main
-corner(top, 12)
-
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -110, 1, 0)
-title.Position = UDim2.fromOffset(18, 0)
-title.BackgroundTransparency = 1
-title.Text = "UNIVERSAL LUA"
-title.TextColor3 = WHITE
-title.TextSize = 17
-title.Font = Enum.Font.GothamBold
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = top
-
-local version = Instance.new("TextLabel")
-version.Size = UDim2.fromOffset(75, 20)
-version.Position = UDim2.new(0, 160, 0.5, -10)
-version.BackgroundTransparency = 1
-version.Text = "V3.0"
-version.TextColor3 = RED
-version.TextSize = 11
-version.Font = Enum.Font.GothamBold
-version.Parent = top
-
-local close = Instance.new("TextButton")
-close.Size = UDim2.fromOffset(34, 30)
-close.Position = UDim2.new(1, -45, 0, 11)
-close.BackgroundColor3 = Color3.fromRGB(65, 25, 32)
-close.Text = "×"
-close.TextColor3 = WHITE
-close.TextSize = 22
-close.Font = Enum.Font.GothamBold
-close.AutoButtonColor = false
-close.Parent = top
-corner(close, 7)
-
--- Área lateral
-local sidebar = Instance.new("Frame")
-sidebar.Position = UDim2.fromOffset(12, 65)
-sidebar.Size = UDim2.new(0, 135, 1, -78)
-sidebar.BackgroundColor3 = PANEL
-sidebar.BorderSizePixel = 0
-sidebar.Parent = main
-corner(sidebar, 9)
-
-local sideTitle = Instance.new("TextLabel")
-sideTitle.Size = UDim2.new(1, -20, 0, 30)
-sideTitle.Position = UDim2.fromOffset(10, 8)
-sideTitle.BackgroundTransparency = 1
-sideTitle.Text = "MENU"
-sideTitle.TextColor3 = MUTED
-sideTitle.TextSize = 11
-sideTitle.Font = Enum.Font.GothamBold
-sideTitle.TextXAlignment = Enum.TextXAlignment.Left
-sideTitle.Parent = sidebar
-
--- Conteúdo
-local content = Instance.new("Frame")
-content.Position = UDim2.fromOffset(158, 65)
-content.Size = UDim2.new(1, -170, 1, -78)
-content.BackgroundColor3 = PANEL
-content.BorderSizePixel = 0
-content.Parent = main
-corner(content, 9)
-
-local pageTitle = Instance.new("TextLabel")
-pageTitle.Position = UDim2.fromOffset(16, 12)
-pageTitle.Size = UDim2.new(1, -32, 0, 30)
-pageTitle.BackgroundTransparency = 1
-pageTitle.Text = "Player"
-pageTitle.TextColor3 = WHITE
-pageTitle.TextSize = 19
-pageTitle.Font = Enum.Font.GothamBold
-pageTitle.TextXAlignment = Enum.TextXAlignment.Left
-pageTitle.Parent = content
-
-local subtitle = Instance.new("TextLabel")
-subtitle.Position = UDim2.fromOffset(16, 42)
-subtitle.Size = UDim2.new(1, -32, 0, 22)
-subtitle.BackgroundTransparency = 1
-subtitle.Text = "Universal Lua interface"
-subtitle.TextColor3 = MUTED
-subtitle.TextSize = 11
-subtitle.Font = Enum.Font.Gotham
-subtitle.TextXAlignment = Enum.TextXAlignment.Left
-subtitle.Parent = content
-
-local pageArea = Instance.new("Frame")
-pageArea.Position = UDim2.fromOffset(12, 75)
-pageArea.Size = UDim2.new(1, -24, 1, -87)
-pageArea.BackgroundTransparency = 1
-pageArea.Parent = content
-
-local pageLayout = Instance.new("UIListLayout")
-pageLayout.Padding = UDim.new(0, 9)
-pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-pageLayout.Parent = pageArea
-
--- Mensagem de interação
-local notification = Instance.new("TextLabel")
-notification.Size = UDim2.new(0, 220, 0, 38)
-notification.Position = UDim2.new(0.5, -110, 1, -55)
-notification.BackgroundColor3 = CARD
-notification.TextColor3 = WHITE
-notification.TextSize = 12
-notification.Font = Enum.Font.GothamSemibold
-notification.Text = ""
-notification.Visible = false
-notification.Parent = gui
-corner(notification, 8)
-stroke(notification, RED, 1)
-
-local function notify(message)
-    notification.Text = message
-    notification.Visible = true
-    notification.TextTransparency = 0
-    task.delay(2, function()
-        tween(notification, {TextTransparency = 1}, 0.3)
-        task.wait(0.3)
-        notification.Visible = false
-        notification.TextTransparency = 0
+    local sidebar = make("Frame", {Position=UDim2.fromOffset(12,124), Size=UDim2.new(0,155,1,-136), BackgroundColor3=C.Panel, BorderSizePixel=0}, main)
+    round(sidebar, 10)
+    local content = make("Frame", {Position=UDim2.fromOffset(178,124), Size=UDim2.new(1,-190,1,-136), BackgroundColor3=C.Panel, BorderSizePixel=0}, main)
+    round(content, 10)
+    local pageTitle = label(content, "Player", UDim2.new(1,-28,0,32), UDim2.fromOffset(16,12), 21, C.Red)
+    local page = make("ScrollingFrame", {Position=UDim2.fromOffset(12,54), Size=UDim2.new(1,-24,1,-66), BackgroundTransparency=1, BorderSizePixel=0, ScrollBarThickness=4, CanvasSize=UDim2.new()}, content)
+    local layout = make("UIListLayout", {Padding=UDim.new(0,8), SortOrder=Enum.SortOrder.LayoutOrder}, page)
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        page.CanvasSize = UDim2.fromOffset(0, layout.AbsoluteContentSize.Y + 8)
     end)
-end
 
--- Conectar o módulo de notificações à notificação visual da interface
-if Modules.Notifications and Modules.Notifications.SetHandler then
-    Modules.Notifications.SetHandler(notify)
-end
+    local notifyLabel = make("TextLabel", {Size=UDim2.fromOffset(260,38), Position=UDim2.new(0.5,-130,1,-52), BackgroundColor3=C.Card, TextColor3=C.White, TextSize=12, Font=Enum.Font.GothamSemibold, Visible=false, Text=""}, gui)
+    round(notifyLabel, 8); outline(notifyLabel, C.Red)
+    local function notify(msg)
+        if not Modules.Settings.Get("Notifications") then return end
+        notifyLabel.Text = tostring(msg); notifyLabel.Visible = true
+        task.delay(2, function() if notifyLabel.Parent then notifyLabel.Visible = false end end)
+    end
+    Modules.Notifications.SetCallback(notify)
 
--- Limpar página
-local function clearPage()
-    for _, child in ipairs(pageArea:GetChildren()) do
-        if child:IsA("GuiObject") and child ~= pageLayout then
-            child:Destroy()
+    local function clear()
+        for _, child in ipairs(page:GetChildren()) do
+            if child ~= layout then child:Destroy() end
         end
     end
-end
-
--- Cartão informativo
-local function addCard(name, description)
-    local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, 0, 0, 65)
-    card.BackgroundColor3 = CARD
-    card.BorderSizePixel = 0
-    card.Parent = pageArea
-    corner(card, 8)
-
-    local accent = Instance.new("Frame")
-    accent.Size = UDim2.new(0, 3, 1, -18)
-    accent.Position = UDim2.fromOffset(0, 9)
-    accent.BackgroundColor3 = RED
-    accent.BorderSizePixel = 0
-    accent.Parent = card
-    corner(accent, 3)
-
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Position = UDim2.fromOffset(14, 9)
-    nameLabel.Size = UDim2.new(1, -25, 0, 22)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = name
-    nameLabel.TextColor3 = WHITE
-    nameLabel.TextSize = 13
-    nameLabel.Font = Enum.Font.GothamBold
-    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-    nameLabel.Parent = card
-
-    local desc = Instance.new("TextLabel")
-    desc.Position = UDim2.fromOffset(14, 32)
-    desc.Size = UDim2.new(1, -25, 0, 20)
-    desc.BackgroundTransparency = 1
-    desc.Text = description
-    desc.TextColor3 = MUTED
-    desc.TextSize = 10
-    desc.Font = Enum.Font.Gotham
-    desc.TextXAlignment = Enum.TextXAlignment.Left
-    desc.Parent = card
-end
-
--- Botão de ação visual
-local function addAction(name, callback)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, 0, 0, 42)
-    button.BackgroundColor3 = CARD
-    button.Text = "   " .. name
-    button.TextColor3 = WHITE
-    button.TextSize = 12
-    button.Font = Enum.Font.GothamSemibold
-    button.TextXAlignment = Enum.TextXAlignment.Left
-    button.AutoButtonColor = false
-    button.Parent = pageArea
-    corner(button, 7)
-
-    button.MouseEnter:Connect(function()
-        tween(button, {BackgroundColor3 = Color3.fromRGB(55, 27, 34)}, 0.15)
-    end)
-
-    button.MouseLeave:Connect(function()
-        tween(button, {BackgroundColor3 = CARD}, 0.15)
-    end)
-
-    button.MouseButton1Click:Connect(callback)
-end
-
--- Abas
-local tabs = {"Player", "Visual", "Movement", "Settings"}
-local selectedTab
-
-local function showTab(tabName)
-    selectedTab = tabName
-    clearPage()
-
-    pageTitle.Text = tabName
-
-    if tabName == "Player" then
-        subtitle.Text = "Player information"
-        local info = Modules.Player.GetInfo()
-        addCard("Player", info.DisplayName .. "  (@" .. info.Username .. ")")
-        addCard("User ID", tostring(info.UserId))
-        addCard("Character status", "Health: " .. info.Health .. "/" .. info.MaxHealth .. "  |  WalkSpeed: " .. info.WalkSpeed)
-        addAction("Refresh information", function()
-            showTab("Player")
-            notify("Informações atualizadas!")
-        end)
-
-    elseif tabName == "Visual" then
-        subtitle.Text = "Interface appearance"
-        local visual = Modules.Visual.GetSettings()
-        addCard("Current theme", visual.Theme)
-        addCard("Accent color", "RGB " .. math.floor(visual.AccentColor.R * 255) .. ", " .. math.floor(visual.AccentColor.G * 255) .. ", " .. math.floor(visual.AccentColor.B * 255))
-        addAction("Show visual settings", function()
-            notify("Tema preto e vermelho ativo")
-        end)
-
-    elseif tabName == "Movement" then
-        subtitle.Text = "Character movement information"
-        local speed = Modules.Movement.GetWalkSpeed()
-        addCard("Current WalkSpeed", tostring(speed))
-        addCard("Movement module", "Leitura das informações de movimento")
-        addAction("Refresh movement info", function()
-            showTab("Movement")
-            notify("Informações atualizadas!")
-        end)
-
-    elseif tabName == "Settings" then
-        subtitle.Text = "Interface customization"
-        addCard("Universal Lua Test", "Version 3.0 - Modular Edition")
-        addCard("Notifications", Modules.Settings.Get("Notifications") and "Enabled" or "Disabled")
-        addAction("Toggle notifications", function()
-            local current = Modules.Settings.Get("Notifications")
-            Modules.Settings.Set("Notifications", not current)
-            showTab("Settings")
-            notify("Notificações " .. (not current and "ativadas" or "desativadas"))
-        end)
-        addAction("Hide interface", function()
-            main.Visible = false
-            floating.Visible = true
-        end)
-        addAction("Reset interface position", function()
-            main.Position = UDim2.new(0.5, -280, 0.5, -185)
-            notify("Posição restaurada")
+    local function card(title, desc)
+        local f = make("Frame", {Size=UDim2.new(1,-4,0,58), BackgroundColor3=C.Card, BorderSizePixel=0}, page)
+        round(f,8)
+        make("Frame", {Size=UDim2.new(0,3,1,-16), Position=UDim2.fromOffset(0,8), BackgroundColor3=C.Red, BorderSizePixel=0}, f)
+        label(f,title,UDim2.new(1,-26,0,22),UDim2.fromOffset(14,7),13,C.White)
+        label(f,desc,UDim2.new(1,-26,0,20),UDim2.fromOffset(14,30),11,C.Muted)
+        return f
+    end
+    local function button(text, fn)
+        local b = make("TextButton", {Size=UDim2.new(1,-4,0,40), BackgroundColor3=Color3.fromRGB(65,18,27), Text=text, TextColor3=C.White, TextSize=12, Font=Enum.Font.GothamSemibold, AutoButtonColor=true}, page)
+        round(b,7); outline(b,C.Red,1)
+        b.MouseButton1Click:Connect(fn)
+        return b
+    end
+    local function toggle(text, default, changed)
+        local row = make("Frame", {Size=UDim2.new(1,-4,0,42), BackgroundColor3=C.Card, BorderSizePixel=0}, page)
+        round(row,7)
+        label(row,text,UDim2.new(1,-85,1,0),UDim2.fromOffset(12,0),12,C.White)
+        local state = default
+        local b = make("TextButton", {Size=UDim2.fromOffset(48,24), Position=UDim2.new(1,-60,0.5,-12), BackgroundColor3=state and C.Red or Color3.fromRGB(75,70,78), Text=state and "ON" or "OFF", TextColor3=C.White, TextSize=10, Font=Enum.Font.GothamBold}, row)
+        round(b,12)
+        b.MouseButton1Click:Connect(function()
+            state = not state
+            b.Text = state and "ON" or "OFF"
+            b.BackgroundColor3 = state and C.Red or Color3.fromRGB(75,70,78)
+            if changed then changed(state) end
         end)
     end
-
-    for _, item in ipairs(sidebar:GetChildren()) do
-        if item:IsA("TextButton") then
-            local active = item.Name == tabName
-            tween(item, {
-                BackgroundColor3 = active and Color3.fromRGB(75, 25, 35) or PANEL,
-                TextColor3 = active and WHITE or MUTED
-            }, 0.15)
+    local function show(tab)
+        clear(); pageTitle.Text = tab
+        if tab == "Player" then
+            local info = Modules.Player.GetInfo()
+            card("Nome", info.DisplayName)
+            card("Usuário", "@" .. info.Username)
+            card("User ID", tostring(info.UserId))
+            card("Vida", info.Health .. " / " .. info.MaxHealth)
+            card("WalkSpeed", tostring(info.WalkSpeed))
+            button("Atualizar informações", function() show("Player"); notify("Informações atualizadas") end)
+        elseif tab == "Visual" then
+            card("Personalização", "Opções visuais da interface")
+            toggle("Notificações", Modules.Settings.Get("Notifications"), function(v) Modules.Settings.Set("Notifications",v) end)
+            toggle("Realce de teste (visual local)", false, function(v) notify(v and "Realce de teste ativado" or "Realce de teste desativado") end)
+        elseif tab == "Movement" then
+            local current = Modules.Movement.Get() or {WalkSpeed=16,JumpPower=50}
+            card("Controles de movimento", "Para experiências próprias/autorizadas")
+            local ws = current.WalkSpeed
+            local jp = current.JumpPower
+            card("WalkSpeed atual", tostring(ws))
+            button("WalkSpeed +2", function() ws = math.min(ws+2,100); notify("WalkSpeed definido: "..ws) end)
+            button("WalkSpeed -2", function() ws = math.max(ws-2,0); notify("WalkSpeed definido: "..ws) end)
+            button("JumpPower +5", function() jp = math.min(jp+5,150); notify("JumpPower definido: "..jp) end)
+            button("Aplicar movimento", function()
+                if Modules.Movement.Apply(ws,jp) then notify("Movimento aplicado") else notify("Não foi possível aplicar") end
+            end)
+            button("Restaurar padrão", function()
+                ws,jp=16,50
+                Modules.Movement.Reset()
+                notify("Valores padrão restaurados")
+            end)
+        elseif tab == "Combat" then
+            card("Ferramentas de teste", "Controles demonstrativos; sem automação de combate")
+            toggle("Modo de treino (visual)", false, function(v) notify(v and "Modo de treino ligado" or "Modo de treino desligado") end)
+            toggle("Indicador de alvo (demonstração)", false, function(v) notify(v and "Indicador ligado" or "Indicador desligado") end)
+        elseif tab == "Settings" then
+            card("FENIX HUB", "V1.0 • REBORN")
+            button("Ocultar interface", function() main.Visible=false; floating.Visible=true end)
+            button("Restaurar posição", function() main.Position=UDim2.new(0.5,-380,0.5,-250); notify("Posição restaurada") end)
+            button("Notificação de teste", function() notify("FENIX carregado com sucesso!") end)
+        elseif tab == "Notifications" then
+            card("Central de notificações", "Teste os avisos do FENIX")
+            button("Enviar notificação", function() notify("Tudo funcionando!") end)
         end
     end
-end
 
-for index, tabName in ipairs(tabs) do
-    local button = Instance.new("TextButton")
-    button.Name = tabName
-    button.Size = UDim2.new(1, -16, 0, 38)
-    button.Position = UDim2.fromOffset(8, 43 + (index - 1) * 46)
-    button.BackgroundColor3 = PANEL
-    button.Text = "   " .. tabName
-    button.TextColor3 = MUTED
-    button.TextSize = 12
-    button.Font = Enum.Font.GothamSemibold
-    button.TextXAlignment = Enum.TextXAlignment.Left
-    button.AutoButtonColor = false
-    button.Parent = sidebar
-    corner(button, 7)
+    local tabs = {"Player","Visual","Movement","Combat","Settings","Notifications"}
+    for i, name in ipairs(tabs) do
+        local b = make("TextButton", {Name=name, Size=UDim2.new(1,-14,0,42), Position=UDim2.fromOffset(7,10+(i-1)*49), BackgroundColor3=C.Card, Text=name, TextColor3=C.White, TextSize=12, Font=Enum.Font.GothamSemibold, AutoButtonColor=true}, sidebar)
+        round(b,7)
+        b.MouseButton1Click:Connect(function() show(name) end)
+    end
 
-    button.MouseButton1Click:Connect(function()
-        showTab(tabName)
+    close.MouseButton1Click:Connect(function() main.Visible=false; floating.Visible=true end)
+    floating.MouseButton1Click:Connect(function() main.Visible=true; floating.Visible=false end)
+
+    local dragging, dragStart, startPos = false, nil, nil
+    top.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging, dragStart, startPos = true, input.Position, main.Position
+        end
     end)
-end
+    UIS.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            main.Position = UDim2.new(startPos.X.Scale,startPos.X.Offset+delta.X,startPos.Y.Scale,startPos.Y.Offset+delta.Y)
+        end
+    end)
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging=false end
+    end)
 
--- Minimizar e abrir
-close.MouseButton1Click:Connect(function()
-    main.Visible = false
-    floating.Visible = true
-end)
-
-floating.MouseButton1Click:Connect(function()
-    main.Visible = true
-    floating.Visible = false
-end)
-
--- Arrastar janela
-local dragging = false
-local dragStart
-local startPosition
-
-top.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPosition = main.Position
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and (
-        input.UserInputType == Enum.UserInputType.MouseMovement
-        or input.UserInputType == Enum.UserInputType.Touch
-    ) then
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(
-            startPosition.X.Scale,
-            startPosition.X.Offset + delta.X,
-            startPosition.Y.Scale,
-            startPosition.Y.Offset + delta.Y
-        )
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false
-    end
-end)
-
--- Iniciar
-showTab("Player")
-notify("Universal Lua V3.0 carregado!")
+    show("Player")
+    notify("FENIX carregado com sucesso!")
 end
