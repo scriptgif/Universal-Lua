@@ -1,14 +1,13 @@
-
--- UNIVERSAL LUA
+-- UNIVERSAL LUA TEST
 -- Visual Module V3.0
 
 local VisualModule = {}
 
 VisualModule.Settings = {
     Theme = "BlackRed",
-    AccentColor = Color3.fromRGB(220, 35, 35),
-    BackgroundColor = Color3.fromRGB(15, 15, 15),
-    TextColor = Color3.fromRGB(255, 255, 255)
+    AccentColor = Color3.fromRGB(220, 35, 55),
+    BackgroundColor = Color3.fromRGB(13, 13, 17),
+    TextColor = Color3.fromRGB(245, 245, 250)
 }
 
 function VisualModule.GetSettings()
@@ -16,9 +15,12 @@ function VisualModule.GetSettings()
 end
 
 function VisualModule.SetAccentColor(color)
-    if typeof(color) == "Color3" then
-        VisualModule.Settings.AccentColor = color
+    if typeof(color) ~= "Color3" then
+        return false
     end
+
+    VisualModule.Settings.AccentColor = color
+    return true
 end
 
 return VisualModule
