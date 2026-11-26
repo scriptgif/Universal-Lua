@@ -1,6 +1,5 @@
-
--- UNIVERSAL LUA
--- Player Module V3.0
+-- UNIVERSAL LUA TEST
+-- Player Module V3.0 (read-only information)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
