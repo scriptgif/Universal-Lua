@@ -158,6 +158,31 @@ UserInputService.InputChanged:Connect(function(input)
             )
         end
     end
+
+-- Botão flutuante para reabrir o painel
+local toggle = Instance.new("TextButton")
+toggle.Name = "FloatingButton"
+toggle.Size = UDim2.fromOffset(55, 55)
+toggle.Position = UDim2.new(0, 15, 0.5, 0)
+toggle.BackgroundColor3 = Color3.fromRGB(190, 20, 35)
+toggle.Text = "ULT"
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.TextSize = 17
+toggle.Font = Enum.Font.GothamBold
+toggle.Parent = gui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggle
+
+close.MouseButton1Click:Connect(function()
+    main.Visible = false
+    toggle.Visible = true
+end)
+
+toggle.MouseButton1Click:Connect(function()
+    main.Visible = true
+    toggle.Visible = false
 end)
 
 UserInputService.InputEnded:Connect(function(input)
@@ -166,5 +191,5 @@ UserInputService.InputEnded:Connect(function(input)
         dragging = false
     end
 end)
-
+toggle.Visible = false
 showTab("Player")
