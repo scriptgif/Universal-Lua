@@ -127,10 +127,33 @@ for i, tab in ipairs(tabs) do
         showTab(tab)
     end)
 end
+-- Botão flutuante ULT
+local toggle = Instance.new("TextButton")
+toggle.Name = "FloatingButton"
+toggle.Size = UDim2.fromOffset(55, 55)
+toggle.Position = UDim2.new(0, 15, 0.5, 0)
+toggle.BackgroundColor3 = Color3.fromRGB(190, 20, 35)
+toggle.Text = "ULT"
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.TextSize = 18
+toggle.Font = Enum.Font.GothamBold
+toggle.Visible = false
+toggle.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1, 0)
+corner.Parent = toggle
 
 close.MouseButton1Click:Connect(function()
     main.Visible = false
+    toggle.Visible = true
 end)
+
+toggle.MouseButton1Click:Connect(function()
+    main.Visible = true
+    toggle.Visible = false
+end)
+
 
 -- Arrastar com mouse ou toque
 local dragging = false
