@@ -1,15 +1,21 @@
-
--- UNIVERSAL LUA
+-- UNIVERSAL LUA TEST
 -- Notifications Module V3.0
 
 local NotificationModule = {}
+local handler
+
+function NotificationModule.SetHandler(callback)
+    if type(callback) == "function" then
+        handler = callback
+    end
+end
 
 function NotificationModule.Notify(message)
-    if not message then
-        return
+    if handler then
+        handler(tostring(message))
+    else
+        print("[ULT Notification] " .. tostring(message))
     end
-
-    print("[ULT Notification] " .. tostring(message))
 end
 
 function NotificationModule.Warning(message)
