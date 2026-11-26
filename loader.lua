@@ -1,46 +1,34 @@
--- UNIVERSAL LUA TEST
--- Loader V3.0 - Modular Edition
-
+-- FENIX HUB | Loader
 local BASE_URL = "https://raw.githubusercontent.com/scriptgif/Universal-Lua/refs/heads/main/"
 
-local function LoadModule(path)
+local function loadModule(path)
     local ok, result = pcall(function()
-        local source = game:HttpGet(BASE_URL .. path)
-        local chunk, compileError = loadstring(source)
-        assert(chunk, compileError or "Falha ao compilar " .. path)
-        return chunk()
+        return loadstring(game:HttpGet(BASE_URL .. path))()
     end)
-
     if not ok then
-        warn("[ULT] Falha ao carregar " .. path .. ": " .. tostring(result))
+        warn("[FENIX] Falha ao carregar " .. path .. ": " .. tostring(result))
         return nil
     end
-
     return result
 end
 
-local Modules = {
-    Player = LoadModule("modules/player.lua"),
-    Visual = LoadModule("modules/visual.lua"),
-    Movement = LoadModule("modules/movement.lua"),
-    Settings = LoadModule("modules/settings.lua"),
-    Notifications = LoadModule("modules/notifications.lua")
+local modules = {
+    Player = loadModule("modules/player.lua"),
+    Settings = loadModule("modules/settings.lua"),
+    Movement = loadModule("modules/movement.lua"),
+    Visual = loadModule("modules/visual.lua"),
+    Notifications = loadModule("modules/notifications.lua")
 }
-
-for name, module in pairs(Modules) do
-    if type(module) ~= "table" then
-        warn("[ULT] Módulo inválido ou ausente: " .. name)
+for name, value in pairs(modules) do
+    if not value then
+        warn("[FENIX] Módulo ausente: " .. name)
         return
     end
 end
 
-local interface = LoadModule("interface.lua")
-if type(interface) ~= "function" then
-    warn("[ULT] interface.lua não retornou uma função")
-    return
-end
-
-local ok, err = pcall(interface, Modules)
-if not ok then
-    warn("[ULT] Erro ao iniciar interface: " .. tostring(err))
+local start = loadModule("interface.lua")
+if type(start) == "function" then
+    start(modules)
+else
+    warn("[FENIX] interface.lua não retornou uma função.")
 end
