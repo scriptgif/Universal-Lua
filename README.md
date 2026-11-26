@@ -1,16 +1,12 @@
-UNIVERSAL LUA TEST - V3.0
+# FENIX HUB
 
-Estrutura:
-loader.lua
-interface.lua
-modules/player.lua
-modules/visual.lua
-modules/movement.lua
-modules/settings.lua
-modules/notifications.lua
+Projeto modular Lua para Roblox. O loader carrega `interface.lua` e os módulos em `modules/`.
 
-O loader carrega os cinco módulos e depois inicia interface.lua.
-O módulo Movement desta edição apenas exibe a velocidade atual; não altera atributos do personagem.
+## Instalação no GitHub
+Envie `loader.lua`, `interface.lua` e a pasta `modules` para a raiz do repositório, preservando os caminhos.
 
-Loader URL:
-https://raw.githubusercontent.com/scriptgif/Universal-Lua/refs/heads/main/loader.lua
+## Inicialização
+loadstring(game:HttpGet("https://raw.githubusercontent.com/scriptgif/Universal-Lua/refs/heads/main/loader.lua"))()
+
+## Observações
+Os controles de movimento são destinados a experiências próprias ou autorizadas. Os controles da aba Combat são demonstrações visuais, não automação de combate.
