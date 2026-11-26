@@ -1,7 +1,9 @@
-
 -- UNIVERSAL LUA TEST
--- Version 2.0 - Interface Edition
+-- Version 3.0 - Modular Edition
 -- Black & Red UI
+
+return function(Modules)
+    assert(type(Modules) == "table", "Modules table ausente")
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -135,7 +137,7 @@ local version = Instance.new("TextLabel")
 version.Size = UDim2.fromOffset(75, 20)
 version.Position = UDim2.new(0, 160, 0.5, -10)
 version.BackgroundTransparency = 1
-version.Text = "V2.0"
+version.Text = "V3.0"
 version.TextColor3 = RED
 version.TextSize = 11
 version.Font = Enum.Font.GothamBold
@@ -241,6 +243,11 @@ local function notify(message)
     end)
 end
 
+-- Conectar o módulo de notificações à notificação visual da interface
+if Modules.Notifications and Modules.Notifications.SetHandler then
+    Modules.Notifications.SetHandler(notify)
+end
+
 -- Limpar página
 local function clearPage()
     for _, child in ipairs(pageArea:GetChildren()) do
@@ -326,29 +333,45 @@ local function showTab(tabName)
     pageTitle.Text = tabName
 
     if tabName == "Player" then
-        subtitle.Text = "Player section"
-        addCard("Player tools", "Área reservada para ferramentas do jogador")
-        addAction("Player information", function()
-            notify("Interface de Player selecionada")
+        subtitle.Text = "Player information"
+        local info = Modules.Player.GetInfo()
+        addCard("Player", info.DisplayName .. "  (@" .. info.Username .. ")")
+        addCard("User ID", tostring(info.UserId))
+        addCard("Character status", "Health: " .. info.Health .. "/" .. info.MaxHealth .. "  |  WalkSpeed: " .. info.WalkSpeed)
+        addAction("Refresh information", function()
+            showTab("Player")
+            notify("Informações atualizadas!")
         end)
 
     elseif tabName == "Visual" then
-        subtitle.Text = "Visual section"
-        addCard("Visual settings", "Área reservada para opções visuais")
-        addAction("Visual options", function()
-            notify("Opções visuais em desenvolvimento")
+        subtitle.Text = "Interface appearance"
+        local visual = Modules.Visual.GetSettings()
+        addCard("Current theme", visual.Theme)
+        addCard("Accent color", "RGB " .. math.floor(visual.AccentColor.R * 255) .. ", " .. math.floor(visual.AccentColor.G * 255) .. ", " .. math.floor(visual.AccentColor.B * 255))
+        addAction("Show visual settings", function()
+            notify("Tema preto e vermelho ativo")
         end)
 
     elseif tabName == "Movement" then
-        subtitle.Text = "Movement section"
-        addCard("Movement settings", "Área reservada para configurações de movimento")
-        addAction("Movement options", function()
-            notify("Opções de movimento em desenvolvimento")
+        subtitle.Text = "Character movement information"
+        local speed = Modules.Movement.GetWalkSpeed()
+        addCard("Current WalkSpeed", tostring(speed))
+        addCard("Movement module", "Leitura das informações de movimento")
+        addAction("Refresh movement info", function()
+            showTab("Movement")
+            notify("Informações atualizadas!")
         end)
 
     elseif tabName == "Settings" then
         subtitle.Text = "Interface customization"
-        addCard("Universal Lua Test", "Version 2.0 - Interface Edition")
+        addCard("Universal Lua Test", "Version 3.0 - Modular Edition")
+        addCard("Notifications", Modules.Settings.Get("Notifications") and "Enabled" or "Disabled")
+        addAction("Toggle notifications", function()
+            local current = Modules.Settings.Get("Notifications")
+            Modules.Settings.Set("Notifications", not current)
+            showTab("Settings")
+            notify("Notificações " .. (not current and "ativadas" or "desativadas"))
+        end)
         addAction("Hide interface", function()
             main.Visible = false
             floating.Visible = true
@@ -439,4 +462,5 @@ end)
 
 -- Iniciar
 showTab("Player")
-notify("Universal Lua carregado!")
+notify("Universal Lua V3.0 carregado!")
+end
