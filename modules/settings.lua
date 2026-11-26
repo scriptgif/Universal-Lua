@@ -1,5 +1,4 @@
-
--- UNIVERSAL LUA
+-- UNIVERSAL LUA TEST
 -- Settings Module V3.0
 
 local Settings = {}
@@ -8,8 +7,7 @@ Settings.Config = {
     Theme = "BlackRed",
     Notifications = true,
     ShowPlayerInfo = true,
-    WindowVisible = true,
-    WindowPosition = UDim2.new(0.5, -250, 0.5, -175)
+    WindowVisible = true
 }
 
 function Settings.Get(key)
