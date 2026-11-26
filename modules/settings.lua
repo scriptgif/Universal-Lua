@@ -1,30 +1,13 @@
--- UNIVERSAL LUA TEST
--- Settings Module V3.0
-
-local Settings = {}
-
-Settings.Config = {
-    Theme = "BlackRed",
+local M = {}
+M.Values = {
+    Accent = Color3.fromRGB(235, 25, 42),
     Notifications = true,
-    ShowPlayerInfo = true,
-    WindowVisible = true
+    Compact = false
 }
-
-function Settings.Get(key)
-    return Settings.Config[key]
-end
-
-function Settings.Set(key, value)
-    if Settings.Config[key] == nil then
-        return false
-    end
-
-    Settings.Config[key] = value
+function M.Get(key) return M.Values[key] end
+function M.Set(key, value)
+    if M.Values[key] == nil then return false end
+    M.Values[key] = value
     return true
 end
-
-function Settings.GetAll()
-    return Settings.Config
-end
-
-return Settings
+return M
