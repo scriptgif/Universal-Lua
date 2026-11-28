@@ -12,7 +12,7 @@ function M.Get()
     return h and {WalkSpeed = h.WalkSpeed, JumpPower = h.JumpPower} or nil
 end
 
--- Use apenas em experiências próprias ou ambientes em que você tenha autorização.
+
 function M.Apply(walkSpeed, jumpPower)
     local h = humanoid()
     if not h then return false end
