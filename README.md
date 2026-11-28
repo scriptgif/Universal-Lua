@@ -17,10 +17,3 @@ Envie os arquivos mantendo os caminhos e substitua o conteúdo do repositório. 
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/scriptgif/Universal-Lua/refs/heads/main/loader.lua"))()
 ```
-
-## Observações importantes
-- Movimento é destinado somente a experiências próprias ou ambientes em que você tenha autorização.
-- A aba Combat contém indicadores demonstrativos; não executa mira automática ou automação de combate.
-- ESP universal não foi implementado. Recursos de visualização de jogadores devem ser feitos no código da experiência própria/autorizada.
-- Persistência em arquivo depende de recursos específicos do executor e ainda não está habilitada.
-- Compatibilidade com Arceus X e Delta precisa ser validada em testes reais; não é garantida apenas pela edição dos arquivos.
